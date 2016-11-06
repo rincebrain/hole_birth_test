@@ -1,0 +1,19 @@
+zdb_modified was just a modified zdb to cause it to always print holes
+with >= 5 -v flags - the diff for zdb can be found in zdb_print_holes.patch.
+
+sound_alarms.py currently has hardcoded out_A1 and out_A2 reads, which are
+simple to fix - it expects the output from running (modified) zdb on the 
+same file across two snapshots in sequence, e.g. 
+zdb -ddddd -bbbbb -vvvvv pool/dataset/foo@snap1 $(stat -c '%i' filename)
+zdb -ddddd -bbbbb -vvvvv pool/dataset/foo@snap2 $(stat -c '%i' filename)
+
+It might make sense to run something like a log(n) search - check the first
+snapshot after hole_birth was enabled for birth_time 0 holes, and the most
+recent snapshot, and if any are in the latter that aren't in the former,
+DING DING DING WE HAVE A HOLE_BIRTH BUG.
+
+I verified that this successfully detects known hole_birth bugs in the test
+datasets I generated using the scripts in #4809 - patches to make this more
+robust and/or generally useful welcome.
+
+
