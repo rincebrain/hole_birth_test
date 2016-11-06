@@ -1,0 +1,53 @@
+From 7b07f6bf68f9505414013066386d7732233b4388 Mon Sep 17 00:00:00 2001
+From: Rich Ercolani <rincebrain@gmail.com>
+Date: Sun, 6 Nov 2016 17:14:13 -0500
+Subject: [PATCH] Added ability to print hole with sufficient verbose flags to
+ zdb
+
+---
+ cmd/zdb/zdb.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/cmd/zdb/zdb.c b/cmd/zdb/zdb.c
+index b9b0b29..637fef0 100644
+--- a/cmd/zdb/zdb.c
++++ b/cmd/zdb/zdb.c
+@@ -1263,7 +1263,7 @@ visit_indirect(spa_t *spa, const dnode_phys_t *dnp,
+ {
+ 	int err = 0;
+ 
+-	if (bp->blk_birth == 0)
++        if (bp->blk_birth == 0 && dump_opt['d'] < 5)
+ 		return (0);
+ 
+ 	print_indirect(bp, zb, dnp);
+@@ -1437,7 +1437,7 @@ dump_bptree_cb(void *arg, const blkptr_t *bp, dmu_tx_t *tx)
+ {
+ 	char blkbuf[BP_SPRINTF_LEN];
+ 
+-	if (bp->blk_birth != 0) {
++        if (bp->blk_birth != 0 || dump_opt['v'] >= 5 ) {
+ 		snprintf_blkptr(blkbuf, sizeof (blkbuf), bp);
+ 		(void) printf("\t%s\n", blkbuf);
+ 	}
+@@ -1475,7 +1475,7 @@ dump_bpobj_cb(void *arg, const blkptr_t *bp, dmu_tx_t *tx)
+ {
+ 	char blkbuf[BP_SPRINTF_LEN];
+ 
+-	ASSERT(bp->blk_birth != 0);
++//	ASSERT(bp->blk_birth != 0);
+ 	snprintf_blkptr_compact(blkbuf, sizeof (blkbuf), bp);
+ 	(void) printf("\t%s\n", blkbuf);
+ 	return (0);
+@@ -2505,7 +2505,7 @@ zdb_blkptr_cb(spa_t *spa, zilog_t *zilog, const blkptr_t *bp,
+ 	if (bp == NULL)
+ 		return (0);
+ 
+-	if (dump_opt['b'] >= 5 && bp->blk_birth > 0) {
++        if (dump_opt['b'] >= 5 && (bp->blk_birth > 0 || dump_opt['v'] >= 5)) {
+ 		char blkbuf[BP_SPRINTF_LEN];
+ 		snprintf_blkptr(blkbuf, sizeof (blkbuf), bp);
+ 		(void) printf("objset %llu object %llu "
+-- 
+2.1.4
+

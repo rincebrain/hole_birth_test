@@ -1,5 +1,7 @@
 zdb_modified was just a modified zdb to cause it to always print holes
-with >= 5 -v flags - the diff for zdb can be found in zdb_print_holes.patch.
+with >= 5 -v flags - the diff for zdb can be found in zdb_print_holes.patch
+(and a version of the patch that applies to ZoL head can be found in PR
+#5369, or zdb_print_holes_rebased.patch).
 
 sound_alarms.py currently has hardcoded out_A1 and out_A2 reads, which are
 simple to fix - it expects the output from running (modified) zdb on the 
